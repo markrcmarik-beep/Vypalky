@@ -1,9 +1,7 @@
 # ver: 2026-03-14
 # Testovaci skript pro funkci rozvin.jl
 
-using StrojniSoucasti, Test
-
-include(joinpath(@__DIR__, "..", "..", "src", "vypalky", "rozvin.jl"))
+using Vypalky, Test
 
 @testset "rozvin" begin
     @testset "k_factor default" begin
