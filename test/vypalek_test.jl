@@ -1,9 +1,7 @@
 # ver: 2026-03-14
 # Testovaci skript pro funkci vypalek.jl
 
-using StrojniSoucasti, Test
-
-include(joinpath(@__DIR__, "..", "..", "src", "vypalky", "vypalek.jl"))
+using Vypalky, Test
 
 @testset "vypalek" begin
     @testset "chybi tloustka" begin
