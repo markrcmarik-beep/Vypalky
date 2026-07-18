@@ -37,30 +37,20 @@ function rozvin(; Lp=nothing, uhly=nothing, R=nothing, t=nothing,
     to_vec(x) = x isa Number ? [x] : collect(x)
     deg2rad(x) = pi * x / 180
 
+    # --- Validace a příprava vstupů ---
     if t === nothing
         error("Nezadali jste tloustku plechu t.")
     end
-    if !(t isa Number)
-        error("t musi byt cislo.")
-    end
-    if t <= 0
-        error("t musi byt kladna hodnota.")
+    if !(t isa Number && t > 0)
+        error("t (tloušťka) musí být kladné číslo.")
     end
 
     if Lp === nothing
         error("Nezadali jste prime delky Lp.")
     end
     Lp_vec = to_vec(Lp)
-    if isempty(Lp_vec)
-        error("Lp nesmi byt prazdne.")
-    end
-    for v in Lp_vec
-        if !(v isa Number)
-            error("Lp musi obsahovat pouze cisla.")
-        end
-        if v < 0
-            error("Lp musi byt nezaporna hodnota.")
-        end
+    if isempty(Lp_vec) || !all(x -> isa(x, Number) && x >= 0, Lp_vec)
+        error("Lp musí být (vektor) nezáporných čísel a nesmí být prázdné.")
     end
 
     metoda_low = lowercase(metoda)
@@ -68,89 +58,32 @@ function rozvin(; Lp=nothing, uhly=nothing, R=nothing, t=nothing,
         error("Neznama metoda. Pouzijte k_factor, neutral, ba nebo bd.")
     end
 
-    if k === nothing
-        k = 0.33
-    end
-    if !(k isa Number)
-        error("k musi byt cislo.")
-    end
-    if k < 0 || k > 1
+    k_val = k === nothing ? 0.33 : k
+    if !(isa(k_val, Number) && 0 <= k_val <= 1)
         error("k musi byt v rozsahu 0..1.")
     end
+    k = k_val # Přeřazení validované hodnoty
 
-    BA_vec = nothing
-    BD_vec = nothing
-
-    if metoda_low in ("k_factor", "k", "kf", "neutral", "bd", "ba")
-        # pro vypocet BA/BD je potreba uhel a polomer,
-        # pokud nejsou BA/BD zadane primo
-        if BA === nothing && BD === nothing
-            if uhly === nothing
-                error("Nezadali jste uhly ohybu.")
-            end
-            if R === nothing
-                error("Nezadali jste polomer ohybu R.")
-            end
-        end
+    # Pomocná funkce pro validaci a konverzi vektorů
+    function validate_vec(val, check_fn, error_msg)
+        val === nothing && return nothing
+        vec = to_vec(val)
+        (isempty(vec) || !all(check_fn, vec)) && error(error_msg)
+        return vec
     end
 
-    if uhly !== nothing
-        uhly_vec = to_vec(uhly)
-        if isempty(uhly_vec)
-            error("Uhly nesmi byt prazdne.")
-        end
-        for a in uhly_vec
-            if !(a isa Number)
-                error("Uhly musi obsahovat pouze cisla.")
-            end
-            if a <= 0 || a >= 180
-                error("Uhly musi byt v rozsahu (0, 180) stupnu.")
-            end
-        end
-    else
-        uhly_vec = nothing
-    end
+    uhly_vec = validate_vec(uhly, x -> isa(x, Number) && 0 < x < 180,
+        "Uhly musí být (vektor) čísel v rozsahu (0, 180) stupňů.")
 
-    if R !== nothing
-        R_vec = to_vec(R)
-        if isempty(R_vec)
-            error("R nesmi byt prazdne.")
-        end
-        for r in R_vec
-            if !(r isa Number)
-                error("R musi obsahovat pouze cisla.")
-            end
-            if r < 0
-                error("R musi byt nezaporna hodnota.")
-            end
-        end
-    else
-        R_vec = nothing
-    end
+    R_vec = validate_vec(R, x -> isa(x, Number) && x >= 0,
+        "R musí být (vektor) nezáporných čísel.")
 
-    if BA !== nothing
-        BA_vec = to_vec(BA)
-        for b in BA_vec
-            if !(b isa Number)
-                error("BA musi obsahovat pouze cisla.")
-            end
-            if b < 0
-                error("BA musi byt nezaporna hodnota.")
-            end
-        end
-    end
+    BA_vec = validate_vec(BA, x -> isa(x, Number) && x >= 0,
+        "BA musí být (vektor) nezáporných čísel.")
 
-    if BD !== nothing
-        BD_vec = to_vec(BD)
-        for b in BD_vec
-            if !(b isa Number)
-                error("BD musi obsahovat pouze cisla.")
-            end
-            if b < 0
-                error("BD musi byt nezaporna hodnota.")
-            end
-        end
-    end
+    BD_vec = validate_vec(BD, x -> isa(x, Number) && x >= 0,
+        "BD musí být (vektor) nezáporných čísel.")
+    # --- Konec validace ---
 
     # pomocna normalizace delky vektoru
     function expand_or_check(vec, n, name)

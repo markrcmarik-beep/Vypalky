@@ -1,4 +1,4 @@
-# ver: 2026-03-14
+# ver: 2026-07-18
 # Testovaci skript pro funkci vypalek.jl
 
 using Vypalky, Test
@@ -56,3 +56,5 @@ using Vypalky, Test
         @test isapprox(VV[:m], expected_m; rtol=1e-12)
     end
 end
+
+nothing

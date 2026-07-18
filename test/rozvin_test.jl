@@ -1,4 +1,4 @@
-# ver: 2026-03-14
+# ver: 2026-07-18
 # Testovaci skript pro funkci rozvin.jl
 
 using Vypalky, Test
@@ -56,3 +56,5 @@ using Vypalky, Test
         @test_throws ErrorException rozvin(Lp=[10], uhly=[90], R=5)
     end
 end
+
+nothing

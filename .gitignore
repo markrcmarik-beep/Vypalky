@@ -20,10 +20,9 @@ artifacts/
 data/
 outputs/
 plots/
-*.csv
 *.png
 *.pdf
-
+*.csv
 deps/build/
 *.log
 
