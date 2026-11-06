@@ -1,6 +1,6 @@
 name = "Vypalky"
 uuid = "0c6f7b78-ffa2-4edc-bd23-00f8962e33c5"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Martin"]
 
 [deps]
@@ -12,4 +12,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 test = ["Test"]
 
 [compat]
-julia = "1.12"
+#julia = "1.13"
